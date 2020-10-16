@@ -3,27 +3,35 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val tapir = "0.17.0-M2"
-    val cats = "2.2.0"
+    val tapir = "0.17.18"
+    val cats = "2.4.2"
+    val catsEffect = "2.3.3"
+    val tagless = "0.12"
     val doobie = "0.9.2"
-    val flyway = "7.0.3"
-    val http4s = "1.0.0-M4"
+    val flyway = "7.5.1"
     val pureconfig = "0.14.0"
     val circe = "0.12.3"
-    val tofu = "0.8.0"
-    val distage = "0.10.19"
+    val tofu = "0.10.0"
+    val izumi = "1.0.3"
     val refined = "0.9.17"
     val newtype = "0.4.4"
     val catsMtl = "1.0.0"
     val mouse = "0.25"
+    val derevo = "0.11.6"
   }
 
-  val circe = Seq(
-    "io.circe" %% "circe-core",
-    "io.circe" %% "circe-generic",
-    "io.circe" %% "circe-parser",
-    "io.circe" %% "circe-refined"
-  ).map(_ % Versions.circe)
+  val derevo = Seq(
+    "org.manatki" %% "derevo-cats",
+    "org.manatki" %% "derevo-cats-tagless",
+    "org.manatki" %% "derevo-circe-magnolia"
+  ).map(_ % Versions.derevo)
+
+  val tagless = Seq(
+    "org.typelevel" %% "cats-tagless-core"   % Versions.tagless,
+    "org.typelevel" %% "cats-tagless-macros" % Versions.tagless
+  )
+
+  val circe = Seq("io.circe" %% "circe-refined" % Versions.circe)
 
   val tapir = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-core",
@@ -42,23 +50,27 @@ object Dependencies {
     "org.tpolecat" %% "doobie-refined"
   ).map(_ % Versions.doobie)
 
-  val cats = Seq("org.typelevel" %% "cats-core" % Versions.cats, "org.typelevel" %% "cats-effect" % Versions.cats)
-
-  val http4s = Seq("org.http4s" %% "http4s-circe" % Versions.http4s, "org.http4s" %% "http4s-dsl" % Versions.http4s)
+  val cats = Seq("org.typelevel" %% "cats-core" % Versions.cats, "org.typelevel" %% "cats-effect" % Versions.catsEffect)
 
   val flyway = Seq("org.flywaydb" % "flyway-core" % Versions.flyway)
 
-  val pureConfig = Seq(
-    "com.github.pureconfig" %% "pureconfig",
-    "com.github.pureconfig" %% "pureconfig-cats-effect"
-  ).map(_ % Versions.pureconfig)
+  val pureconfig = Seq("com.github.pureconfig" %% "pureconfig", "com.github.pureconfig" %% "pureconfig-cats-effect")
+    .map(_ % Versions.pureconfig)
 
-  val distage = Seq(
-    "io.7mind.izumi" %% "distage-core" % Versions.distage,
-    "io.7mind.izumi" %% "distage-testkit-scalatest" % Versions.distage % Test,
-    "io.7mind.izumi" %% "distage-framework-docker" % Versions.distage % Test,
-    "io.7mind.izumi" %% "distage-extension-config" % Versions.distage % Test
-  )
+  val izumi = Seq(
+    "io.7mind.izumi" %% "distage-core",
+    "io.7mind.izumi" %% "logstage-core",
+    "io.7mind.izumi" %% "logstage-rendering-circe", // Json output
+    "io.7mind.izumi" %% "logstage-adapter-slf4j", // Router from Slf4j to LogStage
+    "io.7mind.izumi" %% "distage-extension-logstage", // LogStage integration with DIStage
+    "io.7mind.izumi" %% "logstage-sink-slf4j" // Router from LogStage to Slf4J
+  ).map(_ % Versions.izumi)
+
+  val izumiTest = Seq(
+    "io.7mind.izumi" %% "distage-testkit-scalatest",
+    "io.7mind.izumi" %% "distage-framework-docker",
+    "io.7mind.izumi" %% "distage-extension-config"
+  ).map(_ % Versions.izumi % Test)
 
   val tofu = Seq("ru.tinkoff" %% "tofu-core" % Versions.tofu)
 

@@ -5,10 +5,15 @@ target
 .classpath
 .project
 .settings
+.bsp
+app/target
 RUNNING_PID
 *.swp
 *.retry
 *.log
 *.lock
+.bloop
+.metals
+project/metals.sbt
 .DS_Store
 deploy.env

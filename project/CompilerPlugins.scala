@@ -13,4 +13,6 @@ object CompilerPlugins {
 
   val betterMonadicFor = compilerPlugin("com.olegpy" %% "better-monadic-for" % Versions.bm4)
 
+  val compileDependencies = Seq(kindProjector, betterMonadicFor)
+
 }
