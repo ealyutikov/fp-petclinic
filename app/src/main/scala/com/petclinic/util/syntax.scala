@@ -9,4 +9,9 @@ object syntax {
     def toResource(implicit F: Applicative[F]): Resource[F, A] = Resource.liftF(fa)
   }
 
+//  implicit class ToResponseOps[F[_] : MonadThrow, A](resultF: F[A]) {
+//    def toResponse(handler: Throwable => ErrorType): F[Either[ErrorType, A]] =
+//      resultF.attempt.map(_.leftMap(handler))
+//  }
+
 }

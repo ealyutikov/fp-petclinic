@@ -4,7 +4,7 @@ object CompilerPlugins {
 
   object Versions {
     val bm4 = "0.3.1"
-    val kindProjector = "0.11.0"
+    val kindProjector = "0.11.3"
   }
 
   val kindProjector = compilerPlugin(
@@ -12,7 +12,6 @@ object CompilerPlugins {
   )
 
   val betterMonadicFor = compilerPlugin("com.olegpy" %% "better-monadic-for" % Versions.bm4)
-
   val compileDependencies = Seq(kindProjector, betterMonadicFor)
 
 }

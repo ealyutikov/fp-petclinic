@@ -1,69 +1,101 @@
 package com.petclinic.logger
 
-import cats.effect.Sync
+import cats.effect.{Resource, Sync}
 import cats.syntax.option._
-import com.petclinic.config.AppConfig
+import com.petclinic.config.LogConfig
+import com.petclinic.config.LogConfig.Paths
+import com.petclinic.util.resources._
+import distage.Lifecycle
 import izumi.fundamentals.platform.time.IzTimeSafe
+import izumi.logstage.api.{Log => ApiLog}
+import izumi.logstage.api.rendering.logunits._
+import izumi.logstage.api.Log.Level
 import izumi.logstage.api.config.{LoggerConfig, LoggerPathConfig}
-import izumi.logstage.api.rendering.json.LogstageCirceRenderingPolicy
-import izumi.logstage.api.rendering.logunits.{Extractor, Renderer, Styler}
 import izumi.logstage.api.rendering.{RenderingOptions, StringRenderingPolicy}
+import izumi.logstage.api.rendering.json.LogstageCirceRenderingPolicy
 import izumi.logstage.api.routing.{ConfigurableLogRouter, LogConfigServiceImpl, StaticLogRouter}
 import izumi.logstage.sink.{ConsoleSink, QueueingSink}
-import logstage.{IzLogger, Level}
+import logstage.IzLogger
 
 object Logger {
 
-  private lazy val separator = new Extractor.Constant(" | ")
+  final class Maker[F[_] : Sync](config: LogConfig) extends Lifecycle.OfCats(makeResource(config))
 
-  private lazy val template = new Renderer.Aggregate(
-    Seq(
-      new Extractor.Constant("["),
-      new Styler.LevelColor(Seq(new Extractor.Timestamp(IzTimeSafe.ISO_LOCAL_DATE_TIME_3NANO))),
-      separator,
-      new Styler.LevelColor(Seq(new Extractor.Level(size = 5))),
-      separator,
-      new Styler.Colored(Console.MAGENTA, Seq(new Styler.Compact(Seq(new Extractor.LoggerName()), takeRight = 3))),
-      separator,
-      new Extractor.ThreadId(),
-      new Extractor.Constant(":"),
-      new Extractor.ThreadName(),
-      separator,
-      new Extractor.LoggerContext(),
-      new Extractor.Constant("]"),
-      new Extractor.Constant(":"),
-      Extractor.Space,
-      new Extractor.Message()
-    )
-  )
-
-  /** {{{ <pattern>[%date | %level | %logger | %thread | %context]: %message</pattern> }}} */
-  def make[F[_] : Sync](cfg: AppConfig.LoggerConfig): F[IzLogger] = Sync[F].delay {
-
+  private def makeResource[F[_]](config: LogConfig)(implicit F: Sync[F]): Resource[F, IzLogger] = {
     val renderingPolicy =
-      if (cfg.json)
+      if (config.json)
         new LogstageCirceRenderingPolicy()
       else {
-        val options = cfg.options.getOrElse(RenderingOptions(withExceptions = true, colored = true))
+        val options = config.options.getOrElse(RenderingOptions(withExceptions = false, colored = true))
+        val template = stringRendererTemplate
         new StringRenderingPolicy(options, template.some)
       }
 
-    val queueingSink = new QueueingSink(new ConsoleSink(renderingPolicy))
+    for {
+      consoleSink  <- Resource.fromAutoCloseable(F.delay(new ConsoleSink(renderingPolicy)))
+      queueingSink <- Resource.fromAutoCloseable(F.delay(new QueueingSink(consoleSink)))
 
-    val sinks = Seq(queueingSink)
+      sinks = Seq(queueingSink)
 
-    val entries = cfg.levels.flatMap {
-      case (levelName, paths) =>
-        val level = Level.parseLetter(levelName)
-        paths.map(path => (path, LoggerPathConfig(level, sinks)))
+      levels = {
+        import shapeless.syntax.std.product._
+        config.levels.toMap[Symbol, Paths].flatMap {
+          case (symbolLevel, packs) =>
+            val level = Level.parseLetter(symbolLevel.name)
+            packs.orEmpty.map(_ -> LoggerPathConfig(level, sinks))
+        }
+      }
+
+      threshold = Level.Info
+
+      logConfig = LoggerConfig(LoggerPathConfig(threshold, sinks), levels)
+
+      logConfigService <- Resource.fromAutoCloseable(F.delay(new LogConfigServiceImpl(logConfig)))
+      router           <- Resource.fromAutoCloseable(F.delay(new ConfigurableLogRouter(logConfigService)))
+
+      _ <- F.delay(queueingSink.start()).toResource
+      _ <- F.delay(StaticLogRouter.instance.setup(router)).toResource
+
+    } yield IzLogger(router)
+
+  }
+
+  private val loggerContextExtractor: Extractor =
+    (entry: ApiLog.Entry, context: RenderingOptions) => {
+      val values = entry.context.customContext.values
+      val out =
+        if (values.nonEmpty)
+          values
+            .map { v =>
+              LogFormat.Default.formatKv(context.colored)(v.name, v.codec, v.value)
+            }
+            .mkString("[", ", ", "]")
+        else
+          ""
+      LETree.TextNode(out)
     }
 
-    val router =
-      new ConfigurableLogRouter(new LogConfigServiceImpl(LoggerConfig(LoggerPathConfig(Level.Info, sinks), entries)))
-
-    queueingSink.start()
-    StaticLogRouter.instance.setup(router)
-    IzLogger(router)
-  }
+  private val stringRendererTemplate: Renderer.Aggregate =
+    new Renderer.Aggregate(
+      Seq(
+        new Extractor.Timestamp(IzTimeSafe.ISO_LOCAL_DATE_TIME_3NANO),
+        Extractor.Space,
+        new Styler.LevelColor(Seq(new Extractor.Constant("["), new Extractor.Level(5), new Extractor.Constant("]"))),
+        Extractor.Space,
+        new Extractor.Constant("from"),
+        Extractor.Space,
+        new Extractor.LoggerName(),
+        Extractor.Space,
+        new Extractor.Constant("in"),
+        Extractor.Space,
+        new Extractor.ThreadName(),
+        Extractor.Space,
+        new Extractor.Constant("-"),
+        Extractor.Space,
+        new Extractor.Message(),
+        Extractor.Space,
+        loggerContextExtractor
+      )
+    )
 
 }

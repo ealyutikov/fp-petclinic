@@ -3,7 +3,7 @@ package com.petclinic.module
 import cats.Monad
 import cats.effect.{ConcurrentEffect, Timer}
 import com.petclinic.config.AppConfig
-import com.petclinic.controller.Controller
+import com.petclinic.http.Controller
 import com.petclinic.util.resources
 import distage.{Id, ModuleDef, TagK}
 import org.http4s.implicits._

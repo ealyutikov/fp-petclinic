@@ -1,38 +1,33 @@
 package com.petclinic.repository
 
-import com.petclinic.model.{NonBlankString, Vet}
+import com.petclinic.model.Vet
 import com.petclinic.util.aliases.Trans
-import doobie.refined.implicits._
+import derevo.derive
+import derevo.tagless.functorK
+import distage.Lifecycle
 import doobie.implicits._
-import eu.timepit.refined.types.numeric.PosLong
-import mouse.all._
+import doobie.{ConnectionIO, LogHandler}
+import doobie.refined.implicits._
+import cats.tagless.syntax.functorK._
 
+@derive(functorK)
 trait VetRepository[DB[_]] {
   def findAll(): DB[List[Vet]]
 }
 
 object VetRepository {
 
-  def apply[DB[_] : Trans]: VetRepository[DB] = new Impl[DB]
+  final class Maker[F[_]](xa: Trans[F], lh: LogHandler)
+    extends Lifecycle.Of(Lifecycle.pure(new DoobieImpl()(lh).mapK(xa)))
 
-  private final class Impl[DB[_]](implicit xa: Trans[DB]) extends VetRepository[DB] {
-    override def findAll(): DB[List[Vet]] =
-      sql"""SELECT
-           |    v.id, v.first_name, v.last_name, s.id, s.name
-           |FROM
-           |    vets v
-           |JOIN
-           |    vet_specialties vs
-           |ON
-           |    vs.vet_id = v.id
-           |JOIN
-           |    specialties s
-           |ON
-           |    vs.specialty_id = s.id""".stripMargin
-        .query[(PosLong, NonBlankString, NonBlankString, PosLong, NonBlankString)]
+  private final class DoobieImpl(implicit lh: LogHandler) extends VetRepository[ConnectionIO] {
+
+    override def findAll(): ConnectionIO[List[Vet]] =
+      sql"""SELECT * FROM vets;"""
+        .stripMargin
+        .query[Vet]
         .to[List]
-        .map { list => ???
-        } ||> xa
+
   }
 
 }

@@ -17,7 +17,7 @@ lazy val app = project
     libraryDependencies ++= {
       cats ++ flyway ++ circe ++ newtype ++ derevo ++
         tapir ++ mouse ++ catsMtl ++ izumiTest ++
-        doobie ++ pureconfig ++ tofu ++
+        doobie ++ pureconfig ++ tofu ++ zio ++
         izumi ++ tofu ++ circe ++ refined ++ tagless ++
         compileDependencies
     },

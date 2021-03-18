@@ -3,7 +3,7 @@ package com.petclinic
 import cats.effect._
 import cats.syntax.apply._
 import com.petclinic.ctx._
-import com.petclinic.module.{BaseModule, ControllersModule, LoggerModule, RepositoryModule, ServerModule}
+import com.petclinic.module._
 import distage.Injector
 import izumi.distage.model.plan.Roots
 import logstage.LogIO
@@ -18,7 +18,7 @@ object Application extends IOApp {
       new BaseModule[F],
       new RepositoryModule[F],
       new ControllersModule[F],
-      new LoggerModule[F],
+      new LoggingModule[F],
       new ServerModule[F]
     ).merge
 
