@@ -1,12 +1,11 @@
 package com.petclinic.module
 
-import cats.effect._
 import cats.{Applicative, Functor, Monad}
-import com.petclinic.util.aliases.Trans
+import cats.effect._
 import distage.{ModuleDef, TagK}
 import tofu.{ApplicativeThrow, MonadThrow}
 
-final class BaseModule[F[_] : ConcurrentEffect : ContextShift : Timer : TagK, DB[_] : Trans : TagK] extends ModuleDef {
+final class BaseModule[F[_] : ConcurrentEffect : ContextShift : Timer : TagK] extends ModuleDef {
 
   addImplicit[ContextShift[F]]
 
@@ -24,7 +23,5 @@ final class BaseModule[F[_] : ConcurrentEffect : ContextShift : Timer : TagK, DB
     .aliased[Functor[F]]
 
   addImplicit[Timer[F]]
-
-  addImplicit[Trans[DB]]
 
 }

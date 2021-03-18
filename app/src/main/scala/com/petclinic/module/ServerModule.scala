@@ -24,7 +24,6 @@ final class ServerModule[F[_] : TagK] extends ModuleDef {
         .cachedThreadPool[F](ce)
         .map { ec =>
           BlazeServerBuilder[F](ec)(ce, timer)
-            .withNio2(true)
             .bindHttp(httpConf.port, httpConf.host)
             .withHttpApp(controllers.routes.orNotFound)
         }
