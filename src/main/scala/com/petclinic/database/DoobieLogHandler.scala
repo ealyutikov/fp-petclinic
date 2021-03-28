@@ -6,7 +6,7 @@ import org.slf4j.{LoggerFactory, Logger => JLogger}
 
 object DoobieLogHandler {
 
-  def apply(): LogHandler = LogHandler(logDoobieEvent(LoggerFactory.getLogger(getClass))(_))
+  def make(): LogHandler = LogHandler(logDoobieEvent(LoggerFactory.getLogger(getClass))(_))
 
   private def logDoobieEvent(logger: JLogger): LogEvent => Unit = {
     case Success(s, a, e1, e2) =>

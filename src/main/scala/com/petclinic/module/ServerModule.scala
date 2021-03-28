@@ -14,7 +14,7 @@ final class ServerModule[F[_] : TagK] extends ModuleDef {
   make[BlazeServerBuilder[F]].fromResource {
     (
       controllers: Controller[F] @Id("controllers"),
-      httpConf: AppConfig.Http,
+      httpConf: AppConfig.HttpConfig,
       ce: ConcurrentEffect[F],
       timer: Timer[F]
     ) =>

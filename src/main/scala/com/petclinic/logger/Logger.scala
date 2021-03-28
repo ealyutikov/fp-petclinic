@@ -9,15 +9,29 @@ import distage.Lifecycle
 import izumi.fundamentals.platform.time.IzTimeSafe
 import izumi.logstage.api.{Log => ApiLog}
 import izumi.logstage.api.rendering.logunits._
-import izumi.logstage.api.Log.Level
+import izumi.logstage.api.Log.{CustomContext, Level}
 import izumi.logstage.api.config.{LoggerConfig, LoggerPathConfig}
 import izumi.logstage.api.rendering.{RenderingOptions, StringRenderingPolicy}
 import izumi.logstage.api.rendering.json.LogstageCirceRenderingPolicy
+import izumi.logstage.api.rendering.StrictEncoded._
 import izumi.logstage.api.routing.{ConfigurableLogRouter, LogConfigServiceImpl, StaticLogRouter}
 import izumi.logstage.sink.{ConsoleSink, QueueingSink}
+import logstage.strict.{LogIOStrict => LogIO}
 import logstage.IzLogger
 
 object Logger {
+
+  type Log[F[_]] = LogIO[F]
+  val Log: LogIO.type = LogIO
+
+  def log[F[_]](implicit L: Log[F]): L.type = L
+
+  type LogCtx = CustomContext
+  val LogCtx: CustomContext.type = CustomContext
+
+  val mapToLogCtx: Map[String, String] => LogCtx = logMap => {
+    LogCtx.fromMap(logMap.view.mapValues(to(_)).toMap)
+  }
 
   final class Maker[F[_] : Sync](config: LogConfig) extends Lifecycle.OfCats(makeResource(config))
 
@@ -34,9 +48,7 @@ object Logger {
     for {
       consoleSink  <- Resource.fromAutoCloseable(F.delay(new ConsoleSink(renderingPolicy)))
       queueingSink <- Resource.fromAutoCloseable(F.delay(new QueueingSink(consoleSink)))
-
       sinks = Seq(queueingSink)
-
       levels = {
         import shapeless.syntax.std.product._
         config.levels.toMap[Symbol, Paths].flatMap {
@@ -45,17 +57,12 @@ object Logger {
             packs.orEmpty.map(_ -> LoggerPathConfig(level, sinks))
         }
       }
-
       threshold = Level.Info
-
       logConfig = LoggerConfig(LoggerPathConfig(threshold, sinks), levels)
-
       logConfigService <- Resource.fromAutoCloseable(F.delay(new LogConfigServiceImpl(logConfig)))
       router           <- Resource.fromAutoCloseable(F.delay(new ConfigurableLogRouter(logConfigService)))
-
-      _ <- F.delay(queueingSink.start()).toResource
-      _ <- F.delay(StaticLogRouter.instance.setup(router)).toResource
-
+      _                <- F.delay(queueingSink.start()).toResource
+      _                <- F.delay(StaticLogRouter.instance.setup(router)).toResource
     } yield IzLogger(router)
 
   }

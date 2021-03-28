@@ -3,10 +3,10 @@ package com.petclinic
 import cats.effect._
 import cats.syntax.apply._
 import com.petclinic.ctx._
+import com.petclinic.logger.Logger.Log
 import com.petclinic.module._
 import distage.Injector
 import izumi.distage.model.plan.Roots
-import logstage.LogIO
 import org.http4s.server.blaze.BlazeServerBuilder
 
 object Application extends IOApp {
@@ -19,7 +19,10 @@ object Application extends IOApp {
       new RepositoryModule[F],
       new ControllersModule[F],
       new LoggingModule[F],
-      new ServerModule[F]
+      new ServerModule[F],
+      new ServiceModule[F],
+      new ConfigModule[F],
+      new DatabaseModule[F]
     ).merge
 
     val injector = Injector[F]()
@@ -27,7 +30,7 @@ object Application extends IOApp {
     val resource = injector.produce(plan)
     resource
       .use { locator =>
-        locator.get[LogIO[F]].info("*** SERVICE STARTED ***") *>
+        locator.get[Log[F]].info("*** SERVICE STARTED ***") *>
         locator.get[BlazeServerBuilder[F]].serve.compile.lastOrError
       }
       .run(EmptyCtx)

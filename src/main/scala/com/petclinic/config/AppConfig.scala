@@ -7,7 +7,7 @@ import pureconfig.module.catseffect.syntax.CatsEffectConfigSource
 import pureconfig.generic.auto._
 import scala.collection.immutable.ListMap
 
-final case class AppConfig(http: Http, dbConfig: DbConfig, flyway: FlywayConfig, logConfig: LogConfig)
+final case class AppConfig(http: HttpConfig, db: DbConfig, flyway: FlywayConfig, log: LogConfig)
 
 object AppConfig {
 
@@ -19,7 +19,7 @@ object AppConfig {
 
   final case class FlywayConfig(location: String, enableMigrations: Boolean = false)
 
-  final case class Http(host: String, port: Int)
+  final case class HttpConfig(host: String, port: Int)
 
   final case class DbConfig(driverClassName: String, url: String, user: String, pass: String, poolSize: Int)
 

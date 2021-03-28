@@ -10,8 +10,7 @@ fork in ThisBuild := true
 
 onChangedBuildSource in Global := ReloadOnSourceChanges
 
-lazy val app = project
-  .in(file("app"))
+lazy val app = (project in file("."))
   .settings(
     name := "fp-petclinic",
     libraryDependencies ++= {
@@ -39,4 +38,5 @@ addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fixCheck", "; compile:scalafix --check ; test:scalafix --check")
 
 scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.4"
+mainClass in (Compile,run) := Some("com.petclinic.Application")
 // format: on
