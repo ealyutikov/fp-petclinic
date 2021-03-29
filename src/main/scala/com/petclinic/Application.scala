@@ -3,6 +3,7 @@ package com.petclinic
 import cats.effect._
 import cats.syntax.apply._
 import com.petclinic.ctx._
+import com.petclinic.database.Migrator
 import com.petclinic.logger.Logger.Log
 import com.petclinic.module._
 import distage.Injector
@@ -30,6 +31,7 @@ object Application extends IOApp {
     val resource = injector.produce(plan)
     resource
       .use { locator =>
+        locator.get[Migrator[F]].migrate *>
         locator.get[Log[F]].info("*** SERVICE STARTED ***") *>
         locator.get[BlazeServerBuilder[F]].serve.compile.lastOrError
       }

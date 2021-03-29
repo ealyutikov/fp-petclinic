@@ -13,7 +13,7 @@ object aliases {
   type Nel[A] = NonEmptyList[A]
   val Nel: NonEmptyList.type = NonEmptyList
 
-  private type NonBlank = NonEmpty And Trimmed
+  type NonBlank = NonEmpty And Trimmed
   type NonBlankString = String Refined NonBlank
 
   type Trans[F[_]] = ConnectionIO ~> F
