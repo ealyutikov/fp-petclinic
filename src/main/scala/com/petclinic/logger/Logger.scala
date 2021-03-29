@@ -84,6 +84,7 @@ object Logger {
   private val stringRendererTemplate: Renderer.Aggregate =
     new Renderer.Aggregate(
       Seq(
+        new Extractor.Constant("["),
         new Extractor.Timestamp(IzTimeSafe.ISO_LOCAL_DATE_TIME_3NANO),
         Extractor.Space,
         new Styler.LevelColor(Seq(new Extractor.Constant("["), new Extractor.Level(5), new Extractor.Constant("]"))),
@@ -95,8 +96,7 @@ object Logger {
         new Extractor.Constant("in"),
         Extractor.Space,
         new Extractor.ThreadName(),
-        Extractor.Space,
-        new Extractor.Constant("-"),
+        new Extractor.Constant("]"),
         Extractor.Space,
         new Extractor.Message(),
         Extractor.Space,
