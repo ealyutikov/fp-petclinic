@@ -1,6 +1,6 @@
 package com.petclinic.module
 
-import com.petclinic.database.{Migrator, Transactor, DoobieLogHandler}
+import com.petclinic.database.{DoobieLogHandler, Migrator, Transactor}
 import com.petclinic.util.aliases.Trans
 import distage.TagK
 import doobie.LogHandler

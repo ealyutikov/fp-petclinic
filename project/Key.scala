@@ -1,6 +1,6 @@
 import java.time.Instant
 
-import sbt.{SettingKey, taskKey}
+import sbt.{taskKey, SettingKey}
 
 object Key {
   val buildBranch = SettingKey[String]("buildBranch", "Git branch")

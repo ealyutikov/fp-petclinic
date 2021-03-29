@@ -18,6 +18,7 @@ object Vet {
 
   @derive(encoder, decoder)
   @newtype final case class Id(value: PosLong)
+
   object Id {
     implicit val meta: Meta[Id] = deriving
   }

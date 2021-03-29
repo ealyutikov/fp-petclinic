@@ -22,21 +22,14 @@ lazy val app = (project in file("."))
     },
     version := appVersion,
     scalaVersion := "2.13.5",
-    semanticdbEnabled := true,
-    semanticdbVersion := scalafixSemanticdb.revision,
     dockerUpdateLatest := true,
     dockerBaseImage := "adoptopenjdk/openjdk11:alpine-jre"
   ).enablePlugins(JavaAppPackaging, JDKPackagerPlugin, DockerPlugin, BuildInfoPlugin)
   .withBuildInfo
 
 
-addCommandAlias("prepare", "fix; fmt; compile; test:compile")
+addCommandAlias("prepare", "fmt; compile; test:compile; fmtCheck")
 addCommandAlias("check", "fixCheck; fmtCheck")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("fmtCheck", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
-addCommandAlias("fix", "all compile:scalafix test:scalafix")
-addCommandAlias("fixCheck", "; compile:scalafix --check ; test:scalafix --check")
-
-scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.5.4"
-mainClass in (Compile,run) := Some("com.petclinic.Application")
 // format: on

@@ -22,7 +22,8 @@ final case class VetController[F[_] : ContextShift : Concurrent : Timer : GenUUI
 ) extends Controller[F] {
 
   private val vetEndpoint =
-    endpoint.get
+    endpoint
+      .get
       .in("api" / "vet")
       .out(jsonBody[List[Vet]])
       .errorOut(jsonBody[ErrorResponse])
@@ -30,8 +31,8 @@ final case class VetController[F[_] : ContextShift : Concurrent : Timer : GenUUI
   override def routes: HttpRoutes[F] =
     Http4sServerInterpreter.toRoutes(vetEndpoint) { _ =>
       GenUUID[F].randomUUID.flatMap { id =>
-        L.local(service.findAll().attempt.map(_.leftMap(e => ErrorResponse(e.getMessage))))(
-          ctx => ctx.updated("traceId", id.toString)
+        L.local(service.findAll().attempt.map(_.leftMap(e => ErrorResponse(e.getMessage))))(ctx =>
+          ctx.updated("traceId", id.toString)
         )
       }
 

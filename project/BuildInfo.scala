@@ -10,6 +10,7 @@ import sbtbuildinfo.{BuildInfoPlugin, _}
 object BuildInfo {
 
   implicit class BuildInfoOps(private val project: Project) extends AnyVal {
+
     def withBuildInfo: Project =
       project
         .enablePlugins(BuildInfoPlugin)
@@ -36,5 +37,7 @@ object BuildInfo {
           buildInfoOptions += BuildInfoOption.ToMap,
           buildInfoOptions += BuildInfoOption.ToJson
         )
+
   }
+
 }

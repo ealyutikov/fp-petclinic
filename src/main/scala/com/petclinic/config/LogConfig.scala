@@ -21,4 +21,5 @@ object LogConfig {
     error: Paths = none[List[String]],
     crit: Paths = none[List[String]]
   )
+
 }

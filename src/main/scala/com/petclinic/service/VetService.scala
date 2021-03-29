@@ -29,8 +29,10 @@ object VetService {
   }
 
   final class LoggingMid[F[_] : Apply : Log] extends VetService[Mid[F, *]] {
+
     override def findAll(): Mid[F, List[Vet]] =
       log.info(s"Started db processing") *> _ <* log.info(s"Finished db processing")
+
   }
 
 }

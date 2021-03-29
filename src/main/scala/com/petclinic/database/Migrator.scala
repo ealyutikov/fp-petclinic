@@ -24,7 +24,8 @@ object Migrator {
     for {
       _ <- log.info(s"Creating flyway")
       flyway <- Sync[F].delay(
-        JFlyway.configure
+        JFlyway
+          .configure
           .dataSource(dbConfig.url, dbConfig.user, dbConfig.pass)
           .locations(flywayConfig.location)
           .load

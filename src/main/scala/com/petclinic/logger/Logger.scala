@@ -51,10 +51,9 @@ object Logger {
       sinks = Seq(queueingSink)
       levels = {
         import shapeless.syntax.std.product._
-        config.levels.toMap[Symbol, Paths].flatMap {
-          case (symbolLevel, packs) =>
-            val level = Level.parseLetter(symbolLevel.name)
-            packs.orEmpty.map(_ -> LoggerPathConfig(level, sinks))
+        config.levels.toMap[Symbol, Paths].flatMap { case (symbolLevel, packs) =>
+          val level = Level.parseLetter(symbolLevel.name)
+          packs.orEmpty.map(_ -> LoggerPathConfig(level, sinks))
         }
       }
       threshold = Level.Info

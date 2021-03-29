@@ -9,7 +9,8 @@ import doobie.util.ExecutionContexts.{cachedThreadPool, fixedThreadPool}
 
 object Transactor {
 
-  final class Maker[F[_] : Async : ContextShift](config: DbConfig) extends Lifecycle.Of(Lifecycle.fromCats(make[F](config)))
+  final class Maker[F[_] : Async : ContextShift](config: DbConfig)
+    extends Lifecycle.Of(Lifecycle.fromCats(make[F](config)))
 
   private def make[F[_] : Async : ContextShift](db: DbConfig): Resource[F, Trans[F]] =
     for {

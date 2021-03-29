@@ -3,7 +3,7 @@ package com.petclinic.util
 import cats.effect.{Resource, Sync}
 import cats.Applicative
 
-import java.util.concurrent.{Executors, ExecutorService}
+import java.util.concurrent.{ExecutorService, Executors}
 import scala.concurrent.ExecutionContext
 
 object resources {

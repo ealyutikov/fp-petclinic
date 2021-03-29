@@ -10,23 +10,20 @@ object Dependencies {
     val doobie = "0.12.1"
     val flyway = "7.5.1"
     val pureconfig = "0.14.0"
-    val circe = "0.12.3" //"0.13.0"
+    val circe = "0.13.0"
     val tofu = "0.10.0"
     val izumi = "1.0.3"
     val refined = "0.9.21"
     val newtype = "0.4.4"
     val catsMtl = "1.0.0"
-    val mouse = "0.25" //"1.0.0"
-    val derevo = "0.12.1" // "0.12.2"
+    val mouse = "1.0.0"
+    val derevo = "0.12.2"
     val zio = "1.0.5"
     val zioCatz = "2.3.1.0"
   }
 
-  val derevo = Seq(
-    "tf.tofu" %% "derevo-cats",
-    "tf.tofu" %% "derevo-cats-tagless",
-    "tf.tofu" %% "derevo-circe-magnolia"
-  ).map(_ % Versions.derevo)
+  val derevo = Seq("tf.tofu" %% "derevo-cats", "tf.tofu" %% "derevo-cats-tagless", "tf.tofu" %% "derevo-circe-magnolia")
+    .map(_ % Versions.derevo)
 
   val tagless = Seq(
     "org.typelevel" %% "cats-tagless-core"   % Versions.tagless,
@@ -43,7 +40,7 @@ object Dependencies {
     "com.softwaremill.sttp.tapir" %% "tapir-enumeratum",
     "com.softwaremill.sttp.tapir" %% "tapir-newtype",
     "com.softwaremill.sttp.tapir" %% "tapir-derevo",
-   // "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs",
+    // "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs",
     //"com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml",
     "com.softwaremill.sttp.tapir" %% "tapir-http4s-server"
   ).map(_ % Versions.tapir)
@@ -79,11 +76,11 @@ object Dependencies {
   ).map(_ % Versions.izumi % Test)
 
   val tofu = Seq(
-      "tf.tofu" %% "tofu-core",
-      "tf.tofu" %% "tofu-zio-core",
-      "tf.tofu" %% "tofu-derivation",
-      "tf.tofu" %% "tofu-doobie"
-    ).map(_ % Versions.tofu)
+    "tf.tofu" %% "tofu-core",
+    "tf.tofu" %% "tofu-zio-core",
+    "tf.tofu" %% "tofu-derivation",
+    "tf.tofu" %% "tofu-doobie"
+  ).map(_ % Versions.tofu)
 
   val refined = Seq("eu.timepit" %% "refined-cats" % Versions.refined)
 
@@ -93,9 +90,6 @@ object Dependencies {
 
   val catsMtl = Seq("org.typelevel" %% "cats-mtl" % Versions.catsMtl)
 
-  val zio = Seq(
-    "dev.zio" %% "zio"              % Versions.zio,
-    "dev.zio" %% "zio-interop-cats" % Versions.zioCatz
-  )
+  val zio = Seq("dev.zio" %% "zio" % Versions.zio, "dev.zio" %% "zio-interop-cats" % Versions.zioCatz)
 
 }
