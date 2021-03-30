@@ -5,7 +5,7 @@ import cats.effect._
 import com.petclinic.ctx.{AskCtx, LocalCtx}
 import com.petclinic.logger.Logger
 import com.petclinic.logger.Logger.LogCtx
-import com.petclinic.util.ec
+import com.petclinic.util.ExecutionContexts
 import distage.{ModuleDef, TagK}
 import tofu.{ApplicativeThrow, MonadThrow, WithContext}
 import tofu.generate.GenUUID
@@ -32,7 +32,7 @@ final class BaseModule[F[_] : ConcurrentEffect : ContextShift : Timer : TagK : L
   addImplicit[LocalCtx[F]]
     .aliased[AskCtx[F]]
 
-  make[Blocker].fromResource(ec.blocker[F]("app-blocker"))
+  make[Blocker].fromResource(ExecutionContexts.blocker[F]("app-blocker"))
 
   make[GenUUID[F]].from(GenUUID.syncGenUUID[F])
 

@@ -6,17 +6,17 @@ import java.util.concurrent.{ExecutorService, Executors, ThreadFactory}
 import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.ExecutionContext
 
-object ec {
+object ExecutionContexts {
 
   def blocker[F[_] : Sync](name: String): Resource[F, Blocker] =
     cachedThreadPool[F](name)
       .map(Blocker.liftExecutionContext)
 
   def fixedThreadPool[F[_] : Sync](size: Int, name: String): Resource[F, ExecutionContext] =
-    makeThreadPool[F](Executors.newFixedThreadPool(size, ec.namedThreadFactory(name)))
+    makeThreadPool[F](Executors.newFixedThreadPool(size, ExecutionContexts.namedThreadFactory(name)))
 
   def cachedThreadPool[F[_] : Sync](name: String): Resource[F, ExecutionContext] =
-    makeThreadPool[F](Executors.newCachedThreadPool(ec.namedThreadFactory(name)))
+    makeThreadPool[F](Executors.newCachedThreadPool(ExecutionContexts.namedThreadFactory(name)))
 
   private def makeThreadPool[F[_]](
     unsafeMakeES: => ExecutorService

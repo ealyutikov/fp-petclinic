@@ -4,7 +4,7 @@ import cats.Monad
 import cats.effect.{ConcurrentEffect, Timer}
 import com.petclinic.config.AppConfig
 import com.petclinic.http.Controller
-import com.petclinic.util.resources
+import com.petclinic.util.ExecutionContexts.cachedThreadPool
 import distage.{Id, ModuleDef, TagK}
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -20,8 +20,7 @@ final class ServerModule[F[_] : TagK] extends ModuleDef {
     ) =>
       implicit val M: Monad[F] = ce
 
-      resources
-        .cachedThreadPool[F](ce)
+      cachedThreadPool[F]("blaze-server-cached")(ce)
         .map { ec =>
           BlazeServerBuilder[F](ec)(ce, timer)
             .bindHttp(httpConf.port, httpConf.host)
