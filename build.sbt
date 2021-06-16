@@ -1,35 +1,24 @@
 import BuildInfo.BuildInfoOps
-import CompilerPlugins._
-import Dependencies._
-
-// format: off
-
-val appVersion = "0.1"
-
-fork in ThisBuild := true
-
-onChangedBuildSource in Global := ReloadOnSourceChanges
+import DockerSettings.DockerSettingsOps
+import Key.{projectVersionMajor, projectVersionMinor}
 
 lazy val app = (project in file("."))
   .settings(
     name := "fp-petclinic",
-    libraryDependencies ++= {
-      flyway ++ circe ++ newtype ++ derevo ++
-        tapir ++ mouse ++ izumiTest ++
-        doobie ++ pureconfig ++ tofu ++ zio ++
-        izumi ++ tofu ++ circe ++ refined ++
-        compileDependencies
-    },
-    version := appVersion,
+    projectVersionMajor := 0,
+    projectVersionMinor := 1,
+    version := s"${projectVersionMajor.value}.${projectVersionMinor.value}",
     scalaVersion := "2.13.6",
-    dockerUpdateLatest := true,
-    dockerBaseImage := "adoptopenjdk/openjdk11:alpine-jre"
-  ).enablePlugins(JavaAppPackaging, JDKPackagerPlugin, DockerPlugin, BuildInfoPlugin)
+    libraryDependencies ++= Seq(Dependencies.Dependencies, CompilerPlugins.Plugins).flatten,
+    fork := true,
+    Global / cancelable := true,
+    Global / onChangedBuildSource := ReloadOnSourceChanges,
+    scalafmtDetailedError := true
+  )
+  .withDocker
   .withBuildInfo
-
 
 addCommandAlias("prepare", "fmt; compile; test:compile; fmtCheck")
 addCommandAlias("check", "fixCheck; fmtCheck")
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("fmtCheck", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
-// format: on

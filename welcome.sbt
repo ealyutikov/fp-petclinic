@@ -10,8 +10,8 @@ logo :=
     |    \/_/     \/_/              \/_/     \/___/       \/_/    \/___/     \/___/     \/_____/    \/_/\/_/    \/_____/    \/___/""".stripMargin
 
 usefulTasks := Seq(
-  UsefulTask("a", "~compile", "Compile all modules with file-watch enabled"),
+  UsefulTask("a", "~compile", "compile all modules with file-watch enabled"),
   UsefulTask("b", "prepare", "scalafmt & scalafix & compile"),
   UsefulTask("c", "check", "scalafmt check & scalafix check"),
-  UsefulTask("d", "test", "Run all tests")
+  UsefulTask("d", "test", "run all tests")
 )

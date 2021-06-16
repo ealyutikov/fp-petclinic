@@ -1,4 +1,4 @@
-package com.petclinic.logger
+package com.petclinic.logging
 
 import cats.effect.{Resource, Sync}
 import cats.syntax.option._

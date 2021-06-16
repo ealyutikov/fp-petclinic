@@ -1,17 +1,8 @@
 import sbt._
 
 object CompilerPlugins {
+  val kindProjector = compilerPlugin("org.typelevel" %% "kind-projector" % "0.13.0").cross(CrossVersion.full)
+  val bm4 = compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 
-  object Versions {
-    val bm4 = "0.3.1"
-    val kindProjector = "0.13.0"
-  }
-
-  val kindProjector = compilerPlugin(
-    "org.typelevel" % "kind-projector" % Versions.kindProjector cross CrossVersion.full
-  )
-
-  val betterMonadicFor = compilerPlugin("com.olegpy" %% "better-monadic-for" % Versions.bm4)
-  val compileDependencies = Seq(kindProjector, betterMonadicFor)
-
+  val Plugins: Seq[ModuleID] = List(bm4, kindProjector)
 }

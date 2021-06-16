@@ -1,22 +1,27 @@
 package com.petclinic.util
 
 import cats.effect.{Blocker, Resource, Sync}
-
 import java.util.concurrent.{ExecutorService, Executors, ThreadFactory}
 import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.ExecutionContext
 
-object ExecutionContexts {
+object ec {
 
   def blocker[F[_] : Sync](name: String): Resource[F, Blocker] =
-    cachedThreadPool[F](name)
-      .map(Blocker.liftExecutionContext)
+    ec.cachedThreadPool[F](Option(ec.namedThreadFactory(name))).map(Blocker.liftExecutionContext)
 
-  def fixedThreadPool[F[_] : Sync](size: Int, name: String): Resource[F, ExecutionContext] =
-    makeThreadPool[F](Executors.newFixedThreadPool(size, ExecutionContexts.namedThreadFactory(name)))
+  def fixedThreadPool[F[_] : Sync](
+    size: Int,
+    threadFactory: Option[ThreadFactory] = None
+  ): Resource[F, ExecutionContext] =
+    makeThreadPool[F] {
+      threadFactory.fold(Executors.newFixedThreadPool(size))(Executors.newFixedThreadPool(size, _))
+    }
 
-  def cachedThreadPool[F[_] : Sync](name: String): Resource[F, ExecutionContext] =
-    makeThreadPool[F](Executors.newCachedThreadPool(ExecutionContexts.namedThreadFactory(name)))
+  def cachedThreadPool[F[_] : Sync](threadFactory: Option[ThreadFactory] = None): Resource[F, ExecutionContext] =
+    makeThreadPool[F] {
+      threadFactory.fold(Executors.newCachedThreadPool)(Executors.newCachedThreadPool)
+    }
 
   private def makeThreadPool[F[_]](
     unsafeMakeES: => ExecutorService
@@ -26,9 +31,8 @@ object ExecutionContexts {
     Resource.make(alloc)(free).map(ExecutionContext.fromExecutor)
   }
 
-  private def namedThreadFactory(name: String, daemon: Boolean = false): ThreadFactory =
+  def namedThreadFactory(name: String, daemon: Boolean = false): ThreadFactory =
     new ThreadFactory {
-
       private val parentGroup = Option(System.getSecurityManager)
         .fold(Thread.currentThread().getThreadGroup)(_.getThreadGroup)
 
@@ -45,5 +49,4 @@ object ExecutionContexts {
       }
 
     }
-
 }

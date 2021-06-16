@@ -1,19 +1,18 @@
 package com.petclinic.repository
 
-import cats.Apply
-import com.petclinic.logger.Logger.{log, Log}
+import cats.{Apply, Monad}
+import com.petclinic.logging.Logger.{log, Log}
 import com.petclinic.model.Vet
-import com.petclinic.util.aliases.Trans
 import derevo.derive
 import distage.Lifecycle
 import doobie.{ConnectionIO, LogHandler}
 import doobie.implicits._
+import tofu.doobie.LiftConnectionIO
+import tofu.doobie.log.EmbeddableLogHandler
 import tofu.higherKind.derived.representableK
 import tofu.higherKind.Mid
 import tofu.syntax.monadic._
-
 import doobie.refined.implicits._
-import cats.tagless.syntax.functorK._
 
 @derive(representableK)
 trait VetRepository[DB[_]] {
@@ -22,10 +21,10 @@ trait VetRepository[DB[_]] {
 
 object VetRepository {
 
-  final class Maker[F[_] : Apply : Log](xa: Trans[F], lh: LogHandler)
+  final class Maker[DB[_] : Monad : LiftConnectionIO : Log](implicit elh: EmbeddableLogHandler[DB])
     extends Lifecycle.Of(Lifecycle.pure {
-      val mid = new LoggingMid[F]
-      val impl = new DoobieImpl()(lh).mapK(xa)
+      val mid = new LoggingMid[DB]
+      val impl = elh.embedLift(implicit lh => new DoobieImpl())
       mid attach impl
     })
 

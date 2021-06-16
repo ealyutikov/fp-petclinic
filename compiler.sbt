@@ -1,5 +1,5 @@
 // format: off
-scalacOptions in ThisBuild ++= List(
+ ThisBuild / scalacOptions ++= List(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
   "-encoding",                         // Specify character encoding
   "utf-8",                             // used by source files.
@@ -41,6 +41,4 @@ scalacOptions in ThisBuild ++= List(
   "-Wunused:synthetics",
   "-Wunused:params"
 )
-scalacOptions in Test --= Seq("-Ywarn-dead-code")
-scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 // format: on

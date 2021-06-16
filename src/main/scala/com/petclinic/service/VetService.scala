@@ -1,7 +1,7 @@
 package com.petclinic.service
 
 import cats.Apply
-import com.petclinic.logger.Logger.{log, Log}
+import com.petclinic.logging.Logger.{log, Log}
 import com.petclinic.model.Vet
 import com.petclinic.repository.VetRepository
 import derevo.derive

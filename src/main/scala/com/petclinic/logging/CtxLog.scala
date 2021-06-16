@@ -1,7 +1,7 @@
-package com.petclinic.logger
+package com.petclinic.logging
 
 import cats.effect.Sync
-import com.petclinic.logger.Logger.{Log, LogCtx}
+import com.petclinic.logging.Logger.{Log, LogCtx}
 import distage.Lifecycle
 import izumi.logstage.api.logger.AbstractLogger
 import logstage.strict.LogstageCatsStrict.{withDynamicContextStrict => withDynamicContext}

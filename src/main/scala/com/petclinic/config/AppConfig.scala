@@ -1,23 +1,25 @@
 package com.petclinic.config
 
-import cats.effect.{Blocker, ContextShift, Sync}
-import com.petclinic.config.AppConfig._
-import pureconfig.ConfigSource
-import pureconfig.module.catseffect.syntax.CatsEffectConfigSource
-
+import com.petclinic.config.AppConfig.{Http, Swagger}
+import derevo.derive
+import derevo.pureconfig.config
+import pureconfig.ConfigReader
+import sttp.tapir.openapi.Server
+import scala.collection.immutable.ListMap
 import pureconfig.generic.auto._
 
-final case class AppConfig(http: HttpConfig, db: DbConfig, flyway: FlywayConfig, log: LogConfig)
+@derive(config)
+final case class AppConfig(http: Http, swagger: Swagger, dbConfig: DbConfig, logger: LogConfig, flyway: FlywayConfig)
 
-object AppConfig {
+object AppConfig extends WithHints {
 
-  def load[F[_] : Sync : ContextShift](blocker: Blocker): F[AppConfig] =
-    ConfigSource.default.at("app").loadF(blocker)
+  implicit def listMapConfigReaderDerived[V : ConfigReader]: ConfigReader[ListMap[String, V]] =
+    ConfigReader.mapReader[V].map(m => ListMap(m.toSeq: _*))
 
-  final case class FlywayConfig(location: String, enableMigrations: Boolean = false)
+  @derive(config)
+  final case class Http(host: String, port: Int)
 
-  final case class HttpConfig(host: String, port: Int)
-
-  final case class DbConfig(driverClassName: String, url: String, user: String, pass: String, poolSize: Int)
+  @derive(config)
+  final case class Swagger(enabled: Boolean, servers: List[Server])
 
 }
