@@ -21,12 +21,11 @@ final case class VetController[F[_] : ContextShift : Concurrent : Timer : GenUUI
   L: LocalCtx[F]
 ) extends Controller[F] {
 
-  private val vetEndpoint =
-    endpoint
-      .get
-      .in("api" / "vet")
-      .out(jsonBody[List[Vet]])
-      .errorOut(jsonBody[ErrorResponse])
+  private val vetEndpoint = endpoint
+    .get
+    .in("api" / "vet")
+    .out(jsonBody[List[Vet]])
+    .errorOut(jsonBody[ErrorResponse])
 
   override def routes: HttpRoutes[F] =
     Http4sServerInterpreter.toRoutes(vetEndpoint) { _ =>

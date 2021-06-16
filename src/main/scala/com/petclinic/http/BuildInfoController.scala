@@ -14,11 +14,10 @@ import sttp.tapir.server.http4s._
 
 final case class BuildInfoController[F[_] : ContextShift : Concurrent : Timer]() extends Controller[F] {
 
-  private val versionEndpoint =
-    endpoint
-      .get
-      .in("version")
-      .out(jsonBody[BuildInfoResponse])
+  private val versionEndpoint = endpoint
+    .get
+    .in("version")
+    .out(jsonBody[BuildInfoResponse])
 
   override def routes: HttpRoutes[F] =
     Http4sServerInterpreter.toRoutes(versionEndpoint) { _ =>

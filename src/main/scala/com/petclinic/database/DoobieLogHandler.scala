@@ -9,8 +9,7 @@ object DoobieLogHandler {
   def make(): LogHandler = LogHandler(logDoobieEvent(LoggerFactory.getLogger(getClass))(_))
 
   private def logDoobieEvent(logger: JLogger): LogEvent => Unit = {
-    case Success(s, a, e1, e2) =>
-      logger.trace {
+    case Success(s, a, e1, e2) => logger.trace {
         s"""Successful Statement Execution:
           |
           |  ${s.linesIterator.dropWhile(_.trim.isEmpty).mkString("\n")}
@@ -20,8 +19,7 @@ object DoobieLogHandler {
          """.stripMargin
       }
 
-    case ProcessingFailure(s, a, e1, e2, t) =>
-      logger.error {
+    case ProcessingFailure(s, a, e1, e2, t) => logger.error {
         s"""Failed Resultset Processing:
           |
           |  ${s.linesIterator.dropWhile(_.trim.isEmpty).mkString("\n")}
@@ -32,8 +30,7 @@ object DoobieLogHandler {
          """.stripMargin
       }
 
-    case ExecFailure(s, a, e1, t) =>
-      logger.error {
+    case ExecFailure(s, a, e1, t) => logger.error {
         s"""Failed Statement Execution:
           |
           |  ${s.linesIterator.dropWhile(_.trim.isEmpty).mkString("\n")}

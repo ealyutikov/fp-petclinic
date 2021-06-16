@@ -29,9 +29,8 @@ object ExecutionContexts {
   private def namedThreadFactory(name: String, daemon: Boolean = false): ThreadFactory =
     new ThreadFactory {
 
-      private val parentGroup =
-        Option(System.getSecurityManager)
-          .fold(Thread.currentThread().getThreadGroup)(_.getThreadGroup)
+      private val parentGroup = Option(System.getSecurityManager)
+        .fold(Thread.currentThread().getThreadGroup)(_.getThreadGroup)
 
       private val threadGroup = new ThreadGroup(parentGroup, name)
       private val threadCount = new AtomicInteger(1)

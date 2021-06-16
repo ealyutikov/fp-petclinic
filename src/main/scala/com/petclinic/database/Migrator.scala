@@ -44,12 +44,11 @@ object Migrator {
 
     def migrate: F[Unit] =
       if (!config.enableMigrations) log.info("Skip migration")
-      else
-        for {
-          _ <- log.info("Migrate database: start")
-          _ <- F.delay(flyway.migrate())
-          _ <- log.info(s"Migrate database: done")
-        } yield ()
+      else for {
+        _ <- log.info("Migrate database: start")
+        _ <- F.delay(flyway.migrate())
+        _ <- log.info(s"Migrate database: done")
+      } yield ()
 
     def refresh: F[Unit] = clean *> migrate
 

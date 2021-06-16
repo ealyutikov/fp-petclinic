@@ -37,8 +37,7 @@ object Logger {
 
   private def makeResource[F[_]](config: LogConfig)(implicit F: Sync[F]): Resource[F, IzLogger] = {
     val renderingPolicy =
-      if (config.json)
-        new LogstageCirceRenderingPolicy()
+      if (config.json) new LogstageCirceRenderingPolicy()
       else {
         val options = config.options.getOrElse(RenderingOptions(withExceptions = false, colored = true))
         val template = stringRendererTemplate
@@ -66,42 +65,38 @@ object Logger {
 
   }
 
-  private val loggerContextExtractor: Extractor =
-    (entry: ApiLog.Entry, context: RenderingOptions) => {
-      val values = entry.context.customContext.values
-      val out =
-        if (values.nonEmpty)
-          values
-            .map { v =>
-              LogFormat.Default.formatKv(context.colored)(v.name, v.codec, v.value)
-            }
-            .mkString("[", ", ", "]")
-        else
-          ""
-      LETree.TextNode(out)
-    }
+  private val loggerContextExtractor: Extractor = (entry: ApiLog.Entry, context: RenderingOptions) => {
+    val values = entry.context.customContext.values
+    val out =
+      if (values.nonEmpty) values
+        .map { v =>
+          LogFormat.Default.formatKv(context.colored)(v.name, v.codec, v.value)
+        }
+        .mkString("[", ", ", "]")
+      else ""
+    LETree.TextNode(out)
+  }
 
-  private val stringRendererTemplate: Renderer.Aggregate =
-    new Renderer.Aggregate(
-      Seq(
-        new Extractor.Constant("["),
-        new Extractor.Timestamp(IzTimeSafe.ISO_LOCAL_DATE_TIME_3NANO),
-        Extractor.Space,
-        new Styler.LevelColor(Seq(new Extractor.Constant("["), new Extractor.Level(5), new Extractor.Constant("]"))),
-        Extractor.Space,
-        new Extractor.Constant("from"),
-        Extractor.Space,
-        new Extractor.LoggerName(),
-        Extractor.Space,
-        new Extractor.Constant("in"),
-        Extractor.Space,
-        new Extractor.ThreadName(),
-        new Extractor.Constant("]"),
-        Extractor.Space,
-        new Extractor.Message(),
-        Extractor.Space,
-        loggerContextExtractor
-      )
+  private val stringRendererTemplate: Renderer.Aggregate = new Renderer.Aggregate(
+    Seq(
+      new Extractor.Constant("["),
+      new Extractor.Timestamp(IzTimeSafe.ISO_LOCAL_DATE_TIME_3NANO),
+      Extractor.Space,
+      new Styler.LevelColor(Seq(new Extractor.Constant("["), new Extractor.Level(5), new Extractor.Constant("]"))),
+      Extractor.Space,
+      new Extractor.Constant("from"),
+      Extractor.Space,
+      new Extractor.LoggerName(),
+      Extractor.Space,
+      new Extractor.Constant("in"),
+      Extractor.Space,
+      new Extractor.ThreadName(),
+      new Extractor.Constant("]"),
+      Extractor.Space,
+      new Extractor.Message(),
+      Extractor.Space,
+      loggerContextExtractor
     )
+  )
 
 }
