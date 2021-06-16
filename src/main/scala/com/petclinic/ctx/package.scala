@@ -39,7 +39,7 @@ package object ctx {
 
       override def asyncF[A](k: (Either[Throwable, A] => Unit) => Env[F, Unit]): Env[F, A] = concurrent.asyncF(k)
 
-      override def suspend[A](thunk: => Env[F, A]): Env[F, A] = concurrent.suspend(thunk)
+      override def suspend[A](thunk: => Env[F, A]): Env[F, A] = concurrent.defer(thunk)
 
       override def bracketCase[A, B](
         acquire: Env[F, A]

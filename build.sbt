@@ -14,10 +14,10 @@ lazy val app = (project in file("."))
   .settings(
     name := "fp-petclinic",
     libraryDependencies ++= {
-      cats ++ flyway ++ circe ++ newtype ++ derevo ++
-        tapir ++ mouse ++ catsMtl ++ izumiTest ++
+      flyway ++ circe ++ newtype ++ derevo ++
+        tapir ++ mouse ++ izumiTest ++
         doobie ++ pureconfig ++ tofu ++ zio ++
-        izumi ++ tofu ++ circe ++ refined ++ tagless ++
+        izumi ++ tofu ++ circe ++ refined ++
         compileDependencies
     },
     version := appVersion,

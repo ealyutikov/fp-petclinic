@@ -4,7 +4,7 @@ import cats.effect.{Resource, Sync}
 import cats.syntax.option._
 import com.petclinic.config.LogConfig
 import com.petclinic.config.LogConfig.Paths
-import com.petclinic.util.resources._
+import com.petclinic.util.syntax._
 import distage.Lifecycle
 import izumi.fundamentals.platform.time.IzTimeSafe
 import izumi.logstage.api.{Log => ApiLog}
