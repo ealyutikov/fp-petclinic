@@ -4,7 +4,7 @@ object CompilerPlugins {
 
   object Versions {
     val bm4 = "0.3.1"
-    val kindProjector = "0.11.3"
+    val kindProjector = "0.13.0"
   }
 
   val kindProjector = compilerPlugin(

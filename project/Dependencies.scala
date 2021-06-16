@@ -9,7 +9,7 @@ object Dependencies {
     val pureconfig = "0.14.1"
     val circe = "0.14.1"
     val tofu = "0.10.2"
-    val izumi = "1.0.3"
+    val izumi = "1.0.8"
     val refined = "0.9.21"
     val newtype = "0.4.4"
     val mouse = "1.0.0"
@@ -20,7 +20,7 @@ object Dependencies {
   val derevo = Seq("tf.tofu" %% "derevo-cats", "tf.tofu" %% "derevo-cats-tagless", "tf.tofu" %% "derevo-circe-magnolia")
     .map(_ % Versions.derevo)
 
-  val circe = Seq("io.circe" %% "circe-refined" % Versions.circe)
+  val circe = Seq("io.circe" %% "circe-generic" % Versions.circe, "io.circe" %% "circe-refined" % Versions.circe)
 
   val tapir = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-core",

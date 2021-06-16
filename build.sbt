@@ -21,7 +21,7 @@ lazy val app = (project in file("."))
         compileDependencies
     },
     version := appVersion,
-    scalaVersion := "2.13.5",
+    scalaVersion := "2.13.6",
     dockerUpdateLatest := true,
     dockerBaseImage := "adoptopenjdk/openjdk11:alpine-jre"
   ).enablePlugins(JavaAppPackaging, JDKPackagerPlugin, DockerPlugin, BuildInfoPlugin)
