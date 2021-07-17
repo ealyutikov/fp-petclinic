@@ -10,7 +10,6 @@ final class ControllersModule[I[_] : TagK] extends ModuleDef {
   make[SwaggerController[I]].fromResource[SwaggerController.Maker[I]]
   many[Controller[I]].addResource[BuildInfoController.Maker[I]]
 
-
   many[Controller[I]].addResource[VetController.Maker[I, F]]
 
   make[List[Endpoint[_, _, _, _]]].from { (controller: Controller[I] @Id("controllers")) =>

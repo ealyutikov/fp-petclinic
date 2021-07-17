@@ -3,14 +3,13 @@ package com.petclinic.module
 import cats.{Defer, Monad}
 import cats.effect.Sync
 import com.petclinic.context.AppCtx
-import com.petclinic.database.DoobieLogHandler
+import com.petclinic.logging.CtxLoggingModule
 import com.petclinic.repository.RepositoryModule
 import com.petclinic.service.ServiceModule
 import distage.{ModuleDef, TagK}
 import doobie.ConnectionIO
 import tofu._
 import tofu.doobie.LiftConnectionIO
-import tofu.doobie.log.EmbeddableLogHandler
 import tofu.lift.Lift
 
 final class WithDBModule[
@@ -31,9 +30,8 @@ final class WithDBModule[
   addImplicit[WithRun[DB, ConnectionIO, AppCtx]]
     .aliased[WithLocal[DB, AppCtx]]
 
-  make[EmbeddableLogHandler[DB]].fromResource[DoobieLogHandler.Maker[F, DB]]
-
   include(new RepositoryModule[DB])
   include(new ServiceModule[F, DB])
+  include(new CtxLoggingModule[F, DB])
 
 }

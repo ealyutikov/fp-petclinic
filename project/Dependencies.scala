@@ -21,11 +21,11 @@ object Dependencies {
   }
 
   val refined = Seq(
-    "eu.timepit" %% "refined-cats" % Versions.refined,
-    "eu.timepit" %% "refined-pureconfig" % Versions.refined,
-    "io.circe" %% "circe-refined" % Versions.circe,
-    "com.softwaremill.sttp.tapir" %% "tapir-refined" % Versions.tapir,
-    "org.tpolecat" %% "doobie-refined" % Versions.doobie
+    "eu.timepit"                  %% "refined-cats"       % Versions.refined,
+    "eu.timepit"                  %% "refined-pureconfig" % Versions.refined,
+    "io.circe"                    %% "circe-refined"      % Versions.circe,
+    "com.softwaremill.sttp.tapir" %% "tapir-refined"      % Versions.tapir,
+    "org.tpolecat"                %% "doobie-refined"     % Versions.doobie
   )
 
   val derevo = Seq(

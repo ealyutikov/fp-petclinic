@@ -8,7 +8,7 @@ import zio.interop.catz._
 import zio.interop.catz.implicits._
 import tofu.doobie.instances.implicits._
 
-object Application extends zio.App with AppF {
+object Application extends App with AppF {
 
   type I[A] = Task[A]
   type F[A] = RIO[AppCtx, A]

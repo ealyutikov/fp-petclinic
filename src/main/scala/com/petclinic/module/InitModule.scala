@@ -1,6 +1,6 @@
 package com.petclinic.module
 
-import cats.{Applicative, Functor, Monad}
+import cats.{Applicative, Apply, Functor, Monad}
 import cats.effect._
 import com.petclinic.config.ConfigModule
 import com.petclinic.cotroller.ControllersModule
@@ -29,6 +29,7 @@ final class InitModule[I[_] : ConcurrentEffect : ContextShift : Timer : Execute 
   addImplicit[Monad[I]]
     .aliased[Applicative[I]]
     .aliased[Functor[I]]
+    .aliased[Apply[I]]
 
   addImplicit[Timer[I]]
   addImplicit[Clock[I]]

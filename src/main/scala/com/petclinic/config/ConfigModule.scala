@@ -10,4 +10,5 @@ final class ConfigModule[I[_] : TagK] extends ModuleDef {
   make[DbConfig].from((_: AppConfig).dbConfig)
   make[FlywayConfig].from((_: AppConfig).flyway)
   make[LogConfig].from((_: AppConfig).logger)
+  make[Swagger].from((_: AppConfig).swagger)
 }

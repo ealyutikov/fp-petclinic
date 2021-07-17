@@ -17,12 +17,13 @@ import sttp.tapir.json.circe._
 import sttp.tapir.server.http4s.Http4sServerInterpreter
 import tofu.WithRun
 
-final case class VetController[I[_] : Concurrent: ContextShift: Timer, F[_]](
-    service: VetService[F]
+final case class VetController[I[_] : Concurrent : ContextShift : Timer, F[_]](
+  service: VetService[F]
 )(implicit WR: WithRun[F, I, AppCtx])
-    extends Controller[I] {
+  extends Controller[I] {
 
-  private val vetEndpoint = endpoint.get
+  private val vetEndpoint = endpoint
+    .get
     .in("api" / "vet")
     .in(ExpectedHeaders.endpointInput)
     .out(jsonBody[List[Vet]])
@@ -41,8 +42,8 @@ final case class VetController[I[_] : Concurrent: ContextShift: Timer, F[_]](
 
 object VetController {
 
-  final class Maker[I[_]: Concurrent: ContextShift: Timer, F[_]](service: VetService[F])(implicit
-      WR: WithRun[F, I, AppCtx]
+  final class Maker[I[_] : Concurrent : ContextShift : Timer, F[_]](service: VetService[F])(implicit
+    WR: WithRun[F, I, AppCtx]
   ) extends Lifecycle.Of(Lifecycle.pure(VetController[I, F](service)))
 
 }
