@@ -18,3 +18,8 @@ $ docker run ...
 ```bash
 $ curl ...
 ```
+
+### Stop all containers
+```bash
+$ docker stop $(docker ps -aq)
+```

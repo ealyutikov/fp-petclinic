@@ -5,9 +5,8 @@ import cats.effect.{Concurrent, ContextShift, Timer}
 import cats.syntax.applicativeError._
 import cats.syntax.either._
 import cats.syntax.functor._
-import com.petclinic.context.AppCtx
 import com.petclinic.cotroller.Controller.ErrorResponse
-import com.petclinic.model.{ExpectedHeaders, Vet}
+import com.petclinic.model.{AppCtx, ExpectedHeaders, Vet}
 import com.petclinic.service.VetService
 import izumi.distage.model.definition.Lifecycle
 import org.http4s.HttpRoutes

@@ -1,6 +1,6 @@
 package com.petclinic
 
-import com.petclinic.context._
+import com.petclinic.model.AppCtx
 import tofu.doobie.transactor.Txr
 import tofu.zioInstances.implicits._
 import zio._

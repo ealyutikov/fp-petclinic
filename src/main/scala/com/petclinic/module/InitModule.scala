@@ -4,7 +4,7 @@ import cats.{Applicative, Apply, Functor, Monad}
 import cats.effect._
 import com.petclinic.config.ConfigModule
 import com.petclinic.cotroller.ControllersModule
-import com.petclinic.database.DbWarmer
+import com.petclinic.database.DBWarmer
 import com.petclinic.http.ServerModule
 import com.petclinic.logging.InitLoggingModule
 import com.petclinic.util.ec
@@ -39,7 +39,7 @@ final class InitModule[I[_] : ConcurrentEffect : ContextShift : Timer : Execute 
     .from(Scoped.blockerExecute(_: ContextShift[I], _: Blocker, _: Async[I]))
     .aliased[Blocks[I]]
 
-  make[DbWarmer[I]].fromResource[DbWarmer.Maker[I]]
+  make[DBWarmer[I]].fromResource[DBWarmer.Maker[I]]
 
   include(new ConfigModule[I])
   include(new InitLoggingModule[I])

@@ -9,7 +9,7 @@ import tofu.doobie.log.{EmbeddableLogHandler, LogHandlerF}
 import tofu.lift.{Lift, UnliftIO}
 import tofu.syntax.lift._
 
-object DoobieLogHandler {
+object DBLogHandler {
 
   final class Maker[F[_] : Functor : UnliftIO : Log, DB[_] : Lift[F, *[_]]]
     extends Lifecycle.Of(Lifecycle.pure(makeEmbeddable[F, DB]))

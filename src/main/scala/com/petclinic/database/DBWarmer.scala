@@ -9,16 +9,16 @@ import com.petclinic.logging.Logger._
 import distage.Lifecycle
 import doobie.Transactor
 
-trait DbWarmer[I[_]] {
+trait DBWarmer[I[_]] {
   def warmUp: I[Unit]
 }
 
-object DbWarmer {
+object DBWarmer {
 
   final class Maker[I[_] : BracketThrow : Log](trans: Transactor[I], config: DbConfig)
     extends Lifecycle.Of(Lifecycle.pure(new Impl[I](trans, config)))
 
-  final class Impl[I[_] : BracketThrow : Log](transactor: Transactor[I], config: DbConfig) extends DbWarmer[I] {
+  final class Impl[I[_] : BracketThrow : Log](transactor: Transactor[I], config: DbConfig) extends DBWarmer[I] {
     def warmUp: I[Unit] = {
       import doobie.implicits._
       Monad[I].whenA(config.warmUp) {

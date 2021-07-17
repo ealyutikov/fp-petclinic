@@ -30,7 +30,7 @@ object VetRepository {
 
   private final class DoobieImpl(implicit lh: LogHandler) extends VetRepository[ConnectionIO] {
     override def findAll(): ConnectionIO[List[Vet]] =
-      sql"""SELECT * FROM vets;"""
+      sql"""SELECT * FROM vets"""
         .stripMargin
         .query[Vet]
         .to[List]

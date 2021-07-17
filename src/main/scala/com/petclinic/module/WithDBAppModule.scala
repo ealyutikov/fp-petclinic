@@ -2,8 +2,8 @@ package com.petclinic.module
 
 import cats.{Defer, Monad}
 import cats.effect.Sync
-import com.petclinic.context.AppCtx
 import com.petclinic.logging.CtxLoggingModule
+import com.petclinic.model.AppCtx
 import com.petclinic.repository.RepositoryModule
 import com.petclinic.service.ServiceModule
 import distage.{ModuleDef, TagK}
@@ -12,7 +12,7 @@ import tofu._
 import tofu.doobie.LiftConnectionIO
 import tofu.lift.Lift
 
-final class WithDBModule[
+final class WithDBAppModule[
   I[_] : TagK,
   F[_] : TagK,
   DB[_] : Sync : WithRun[*[_], ConnectionIO, AppCtx] : Lift[I, *[_]] : Lift[F, *[_]] : TagK

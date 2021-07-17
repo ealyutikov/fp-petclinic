@@ -3,11 +3,11 @@ package com.petclinic
 import cats.Parallel
 import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.syntax.apply._
-import com.petclinic.context.AppCtx
-import com.petclinic.database.{DbWarmer, Flyway}
+import com.petclinic.database.{DBMigrator, DBWarmer}
 import com.petclinic.http.HttpServer
 import com.petclinic.logging.Logger.Log
-import com.petclinic.module.{InitModule, MainModule, WithDBModule}
+import com.petclinic.model.AppCtx
+import com.petclinic.module.{InitModule, WithDBAppModule, WithFAppModule}
 import distage.{Injector, ModuleDef, TagK}
 import doobie.ConnectionIO
 import izumi.distage.model.plan.Roots
@@ -24,8 +24,8 @@ trait AppF {
 
     val module = new ModuleDef {
       include(new InitModule[I])
-      include(new MainModule[I, F])
-      include(new WithDBModule[I, F, DB])
+      include(new WithFAppModule[I, F])
+      include(new WithDBAppModule[I, F, DB])
     }
 
     val injector = Injector[I]()
@@ -33,8 +33,8 @@ trait AppF {
     val resource = injector.produce(plan)
     resource
       .use { locator =>
-        locator.get[DbWarmer[I]].warmUp *>
-        locator.get[Flyway[I]].migrate *>
+        locator.get[DBWarmer[I]].warmUp *>
+        locator.get[DBMigrator[I]].migrate *>
         locator.get[Log[I]].info("*** SERVICE STARTED ***") *>
         locator.get[HttpServer[fs2.Stream[I, *]]].serve.compile.drain
       }

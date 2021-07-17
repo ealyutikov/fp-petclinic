@@ -2,9 +2,9 @@ package com.petclinic.module
 
 import cats.{Applicative, ApplicativeThrow, Apply, Functor, Monad, MonadThrow}
 import cats.effect.{Clock, Concurrent, ContextShift, Sync, Timer}
-import com.petclinic.context.AppCtx
 import com.petclinic.database.DatabaseModule
 import com.petclinic.logging.Logger.LogCtx
+import com.petclinic.model.AppCtx
 import distage.{ModuleDef, TagK}
 import tofu.{WithContext, WithLocal, WithRun}
 import tofu.lift.{Lift, UnliftIO}
@@ -12,7 +12,7 @@ import tofu.lift.{Lift, UnliftIO}
 import scala.annotation.nowarn
 
 @nowarn("cat=unused-params")
-final class MainModule[
+final class WithFAppModule[
   I[_] : TagK,
   F[_] : Concurrent : ContextShift : Timer : UnliftIO : WithRun[*[_], I, AppCtx] : TagK
 ] extends ModuleDef {

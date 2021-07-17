@@ -1,11 +1,10 @@
-package com.petclinic.context
+package com.petclinic.model
 
 import com.petclinic.logging.Logger.LogCtx
+import com.petclinic.model.context.{RequestId, SessionId}
 import izumi.logstage.api.rendering.StrictEncoded
 import tofu.optics.Extract
-import tofu.optics.macros.ClassyOptics
 
-@ClassyOptics
 final case class AppCtx(requestId: RequestId, sessionId: Option[SessionId]) {
   lazy val asLogCtx: LogCtx = {
     val builder = Map.newBuilder[String, StrictEncoded]

@@ -1,7 +1,8 @@
 package com.petclinic.model
 
-import com.petclinic.context.{RequestId, SessionId}
+import com.petclinic.model.context.{RequestId, SessionId}
 import sttp.tapir._
+import sttp.tapir.codec.newtype._
 
 final case class ExpectedHeaders(requestId: RequestId, sessionId: Option[SessionId])
 

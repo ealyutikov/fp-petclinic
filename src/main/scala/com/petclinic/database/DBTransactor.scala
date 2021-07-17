@@ -9,7 +9,7 @@ import doobie.Transactor
 import doobie.hikari.HikariTransactor
 import izumi.distage.model.definition.Lifecycle
 
-object DoobieTransactor {
+object DBTransactor {
   private val defaultConnectECThreadCount = 10
   private val maxConnectECThreadCount = 32
 
