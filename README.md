@@ -2,9 +2,9 @@
 
 ## Implementation of [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) through Typelevel Scala
 
-## Running petclinic locally
+## Running petclinic locally:
 
-###Steps:
+### Steps:
 
 * run postgres & rabbit
 

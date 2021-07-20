@@ -7,6 +7,7 @@ import com.petclinic.cotroller.ControllersModule
 import com.petclinic.database.DBWarmer
 import com.petclinic.http.ServerModule
 import com.petclinic.logging.InitLoggingModule
+import com.petclinic.metrics.MetricsModule
 import com.petclinic.util.ec
 import distage.{ModuleDef, TagK}
 import tofu.{ApplicativeThrow => _, BracketThrow => _, MonadThrow => _, _}
@@ -45,5 +46,6 @@ final class InitModule[I[_] : ConcurrentEffect : ContextShift : Timer : Execute 
   include(new InitLoggingModule[I])
   include(new ServerModule[I])
   include(new ControllersModule[I])
+  include(new MetricsModule[I])
 
 }

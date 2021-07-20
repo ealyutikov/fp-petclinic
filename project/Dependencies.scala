@@ -14,10 +14,10 @@ object Dependencies {
     val mouse = "1.0.0"
     val derevo = "0.12.5"
     val zioCats = "2.5.1.0"
-    val sttp = "3.2.3"
     val http4s = "0.22.0-RC1"
     val swagger = "3.51.1"
     val circe = "0.13.0"
+    val epimetheus = "0.4.0"
   }
 
   val refined = Seq(
@@ -49,7 +49,8 @@ object Dependencies {
   val http4s = Seq(
     "org.http4s" %% "http4s-circe",
     "org.http4s" %% "http4s-dsl",
-    "org.http4s" %% "http4s-blaze-server"
+    "org.http4s" %% "http4s-blaze-server",
+    "org.http4s" %% "http4s-prometheus-metrics"
   ).map(_ % Versions.http4s)
 
   val doobie = Seq(
@@ -86,6 +87,8 @@ object Dependencies {
     "tf.tofu" %% "tofu-optics-macro"
   ).map(_ % Versions.tofu)
 
+  val epimetheus = Seq("io.chrisdavenport" %% "epimetheus" % Versions.epimetheus)
+
   val newtype = Seq("io.estatico" %% "newtype" % Versions.newtype)
 
   val mouse = Seq("org.typelevel" %% "mouse" % Versions.mouse)
@@ -94,13 +97,7 @@ object Dependencies {
 
   val swagger = Seq("org.webjars" % "swagger-ui" % Versions.swagger)
 
-  val sttp = Seq(
-    "com.softwaremill.sttp.client3" %% "core",
-    "com.softwaremill.sttp.client3" %% "circe",
-    "com.softwaremill.sttp.client3" %% "async-http-client-backend-cats"
-  ).map(_ % Versions.sttp)
-
   val Dependencies: Seq[ModuleID] = flyway ++ swagger ++ derevo ++ tapir ++ mouse ++ izumiTest ++
-    doobie ++ pureconfig ++ tofu ++ zio ++ izumi ++ tofu ++ refined ++ http4s
+    doobie ++ pureconfig ++ tofu ++ zio ++ izumi ++ tofu ++ refined ++ http4s ++ epimetheus
 
 }

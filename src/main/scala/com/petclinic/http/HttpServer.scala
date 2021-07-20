@@ -6,11 +6,12 @@ import cats.implicits.toSemigroupKOps
 import cats.syntax.compose._
 import com.petclinic.config.AppConfig
 import com.petclinic.cotroller.{Controller, SwaggerController}
-import com.petclinic.http.Middleware.logged
+import com.petclinic.http.Middleware.{logged, metered}
 import com.petclinic.logging.Logger.Log
 import com.petclinic.util.resource._
 import distage.{Id, Lifecycle}
 import fs2.Stream
+import io.chrisdavenport.epimetheus.CollectorRegistry
 import org.http4s.implicits.http4sKleisliResponseSyntaxOptionT
 import org.http4s.HttpRoutes
 import org.http4s.blaze.server.BlazeServerBuilder
@@ -29,13 +30,15 @@ object HttpServer {
   final class Maker[I[_] : ConcurrentEffect : Timer : Execute : Log](
     controllers: Controller[I] @Id("controllers"),
     swaggerController: SwaggerController[I],
-    config: AppConfig
-  ) extends Lifecycle.OfCats(resource[I](controllers, swaggerController, config))
+    config: AppConfig,
+    collectorRegistry: CollectorRegistry[I]
+  ) extends Lifecycle.OfCats(resource[I](controllers, swaggerController, config, collectorRegistry))
 
   private def resource[I[_] : ConcurrentEffect : Timer : Execute : Log](
     controllers: Controller[I],
     swaggerController: SwaggerController[I],
-    config: AppConfig
+    config: AppConfig,
+    collectorRegistry: CollectorRegistry[I]
   ): Resource[I, HttpServer[Stream[I, *]]] = {
 
     val swaggerMidl: Endo[HttpRoutes[I]] = routes => {
@@ -44,8 +47,9 @@ object HttpServer {
     }
 
     for {
-      ec <- Execute[I].executionContext.toResource
-      midl = swaggerMidl >>> logged
+      ec          <- Execute[I].executionContext.toResource
+      meteredMidl <- metered(collectorRegistry, "http4s_server")
+      midl = swaggerMidl >>> logged >>> meteredMidl
       _ <- BlazeServerBuilder[I](ec)
         .bindHttp(config.http.port, config.http.host)
         .withHttpApp(midl(controllers.routes).orNotFound)
