@@ -4,9 +4,13 @@ import cats.Monad
 import cats.data.NonEmptyList
 import cats.implicits.{catsSyntaxSemigroup, toSemigroupKOps}
 import cats.kernel.Semigroup
-import io.circe.generic.JsonCodec
+import com.petclinic.model.ExpectedHeaders
+import derevo.circe.magnolia.{decoder, encoder}
+import derevo.derive
 import org.http4s.HttpRoutes
-import sttp.tapir.Endpoint
+import sttp.tapir.{endpoint, Endpoint}
+import sttp.tapir.generic.auto._
+import sttp.tapir.json.circe.jsonBody
 
 trait Controller[I[_]] {
   def routes: HttpRoutes[I]
@@ -15,7 +19,12 @@ trait Controller[I[_]] {
 
 object Controller {
 
-  @JsonCodec
+  val baseEndpoint = endpoint
+    .in("api")
+    .in(ExpectedHeaders.endpointInput)
+    .errorOut(jsonBody[ErrorResponse])
+
+  @derive(encoder, decoder)
   final case class ErrorResponse(error: String)
 
   implicit def catsSemigroupForRoutes[I[_] : Monad]: Semigroup[Controller[I]] =

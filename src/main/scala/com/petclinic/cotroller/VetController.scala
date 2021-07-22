@@ -2,15 +2,13 @@ package com.petclinic.cotroller
 
 import cats.data.NonEmptyList
 import cats.effect.{Concurrent, ContextShift, Timer}
-import cats.syntax.applicativeError._
-import cats.syntax.either._
-import cats.syntax.functor._
-import com.petclinic.cotroller.Controller.ErrorResponse
-import com.petclinic.model.{AppCtx, ExpectedHeaders, Vet}
+import com.petclinic.cotroller.Controller.baseEndpoint
+import com.petclinic.model.{AppCtx, Vet}
 import com.petclinic.service.VetService
+import com.petclinic.util.error._
 import izumi.distage.model.definition.Lifecycle
 import org.http4s.HttpRoutes
-import sttp.tapir.{endpoint, _}
+import sttp.tapir._
 import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe._
 import sttp.tapir.server.http4s.Http4sServerInterpreter
@@ -21,18 +19,16 @@ final case class VetController[I[_] : Concurrent : ContextShift : Timer, F[_]](
 )(implicit WR: WithRun[F, I, AppCtx])
   extends Controller[I] {
 
-  private val vetEndpoint = endpoint
+  private val vetEndpoint = baseEndpoint
     .get
-    .in("api" / "vet")
-    .in(ExpectedHeaders.endpointInput)
+    .in("vet")
     .out(jsonBody[List[Vet]])
-    .errorOut(jsonBody[ErrorResponse])
 
   override def routes: HttpRoutes[I] =
     Http4sServerInterpreter[I]()
       .toRoutes(vetEndpoint) { headers =>
         val ctx = AppCtx(headers.requestId, headers.sessionId)
-        WR.runContext(service.findAll())(ctx).attempt.map(_.leftMap(error => ErrorResponse(error.getMessage)))
+        WR.runContext(service.findAll())(ctx).toError
       }
 
   def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(vetEndpoint)
