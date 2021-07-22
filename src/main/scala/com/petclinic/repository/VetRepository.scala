@@ -2,7 +2,9 @@ package com.petclinic.repository
 
 import cats.{Apply, Monad}
 import com.petclinic.logging.Logger.{log, Log}
-import com.petclinic.model.Vet
+import com.petclinic.model.Specialty
+import com.petclinic.model.Vet.LiteVet
+import com.petclinic.util.list._
 import derevo.derive
 import distage.Lifecycle
 import doobie.{ConnectionIO, LogHandler}
@@ -16,7 +18,7 @@ import doobie.refined.implicits._
 
 @derive(representableK)
 trait VetRepository[DB[_]] {
-  def findAll(): DB[List[Vet]]
+  def findWithSpecialty(): DB[Map[LiteVet, List[Specialty]]]
 }
 
 object VetRepository {
@@ -29,15 +31,20 @@ object VetRepository {
     })
 
   private final class DoobieImpl(implicit lh: LogHandler) extends VetRepository[ConnectionIO] {
-    override def findAll(): ConnectionIO[List[Vet]] =
-      sql"""SELECT * FROM vets"""
+    override def findWithSpecialty(): ConnectionIO[Map[LiteVet, List[Specialty]]] = {
+      sql"""select v.id, v.first_name, v.last_name, s.id, s."name" from vets v
+        |inner join vet_specialties vs
+        |on v.id  = vs.vet_id
+        |inner join specialties s
+        |on s.id = vs.specialty_id"""
         .stripMargin
-        .query[Vet]
+        .query[(LiteVet, Specialty)]
         .to[List]
+    }.map(_.toMapList)
   }
 
   final class LoggingMid[F[_] : Apply : Log] extends VetRepository[Mid[F, *]] {
-    override def findAll(): Mid[F, List[Vet]] =
+    override def findWithSpecialty(): Mid[F, Map[LiteVet, List[Specialty]]] =
       log.info(s"Started db processing") *> _ <* log.info(s"Finished db processing")
   }
 

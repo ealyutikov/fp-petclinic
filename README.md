@@ -6,9 +6,9 @@
 
 ### Steps:
 
-* run postgres & rabbit
+* run postgres
 
-        docker-compose up
+        docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=petclinic -d postgres
 
 * run app
 

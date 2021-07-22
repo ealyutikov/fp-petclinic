@@ -1,6 +1,6 @@
 package com.petclinic.service
 
-import cats.Apply
+import cats.{Apply, Functor}
 import com.petclinic.logging.Logger.{log, Log}
 import com.petclinic.model.Vet
 import com.petclinic.repository.VetRepository
@@ -24,8 +24,11 @@ object VetService {
       mid attach impl
     })
 
-  private final class Impl[F[_]](repository: VetRepository[F]) extends VetService[F] {
-    override def findAll(): F[List[Vet]] = repository.findAll()
+  private final class Impl[F[_] : Functor](repository: VetRepository[F]) extends VetService[F] {
+    override def findAll(): F[List[Vet]] =
+      repository.findWithSpecialty().map { vatToSpec =>
+        vatToSpec.toList.map { case (lite, specialty) => Vet(lite, specialty) }
+      }
   }
 
   final class LoggingMid[F[_] : Apply : Log] extends VetService[Mid[F, *]] {
