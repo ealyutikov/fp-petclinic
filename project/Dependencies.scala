@@ -5,7 +5,7 @@ object Dependencies {
   object Versions {
     val tapir = "0.18.0"
     val doobie = "0.13.4"
-    val flyway = "7.11.0"
+    val flyway = "7.11.2"
     val pureconfig = "0.16.0"
     val tofu = "0.10.2"
     val izumi = "1.0.6"
@@ -16,7 +16,7 @@ object Dependencies {
     val zioCats = "2.5.1.0"
     val http4s = "0.22.0-RC1"
     val swagger = "3.51.1"
-    val circe = "0.13.0"
+    val circe = "0.14.1"
     val epimetheus = "0.4.0"
   }
 
@@ -82,9 +82,7 @@ object Dependencies {
     "tf.tofu" %% "tofu-core",
     "tf.tofu" %% "tofu-zio-core",
     "tf.tofu" %% "tofu-derivation",
-    "tf.tofu" %% "tofu-doobie",
-    "tf.tofu" %% "tofu-optics-core",
-    "tf.tofu" %% "tofu-optics-macro"
+    "tf.tofu" %% "tofu-doobie"
   ).map(_ % Versions.tofu)
 
   val epimetheus = Seq("io.chrisdavenport" %% "epimetheus" % Versions.epimetheus)

@@ -19,19 +19,19 @@ final case class VetController[I[_] : Concurrent : ContextShift : Timer, F[_]](
 )(implicit WR: WithRun[F, I, AppCtx])
   extends Controller[I] {
 
-  private val vetEndpoint = baseEndpoint
+  private val getAllEndpoint = baseEndpoint
     .get
     .in("vet")
     .out(jsonBody[List[Vet]])
 
   override def routes: HttpRoutes[I] =
     Http4sServerInterpreter[I]()
-      .toRoutes(vetEndpoint) { headers =>
+      .toRoutes(getAllEndpoint) { headers =>
         val ctx = AppCtx(headers.requestId, headers.sessionId)
-        WR.runContext(service.findAll())(ctx).toError
+        WR.runContext(service.findAll())(ctx).listToError
       }
 
-  def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(vetEndpoint)
+  def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(getAllEndpoint)
 
 }
 
